@@ -1,5 +1,9 @@
 # Journal of Geography Atlas (1902–2026)
 
+**Live:** [https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/](https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/) · [institution map](https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/institutions.html)
+
+All files below are served from this GitHub Pages site with CORS and HTTP range requests enabled, so GeoLibre (web.geolibre.app → Add Data → URL) can stream them directly, e.g. `https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/terrain/terrain_all.tif`, `https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/data/jog_articles_topicspace.pmtiles`, `https://edgeoinnovations-resources.github.io/journal-of-geography-atlas/data/jog_institutions_hex_years.parquet`.
+
 Two maps of the complete *Journal of Geography* corpus (10,202 articles, Zotero collection `Journal_of_Geography_v3-v125_complete`).
 
 ## 1. Topic landscape — *what the journal thought about* (`index.html`)
