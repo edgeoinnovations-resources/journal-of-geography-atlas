@@ -1,26 +1,27 @@
 <!doctype html><html><head><meta charset="utf-8"><title>Journal of Geography — where it was written (1902–2026)</title>
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script><link href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" rel="stylesheet">
 <style>body{margin:0;font-family:system-ui,sans-serif}#map{position:absolute;inset:0}#panel{position:absolute;top:10px;left:10px;background:#fffc;padding:10px 14px;border-radius:8px;max-width:340px;font-size:13px;box-shadow:0 1px 4px #0003}input[type=range]{width:100%}.popup{font-size:12px;max-width:320px}#detail{position:absolute;right:10px;top:56px;bottom:10px;width:340px;background:#fff;border-radius:8px;box-shadow:0 1px 6px #0004;padding:12px 14px;font-size:12.5px;overflow:auto;display:none}#detail h3{margin:0 0 4px;font-size:15px}#detail h4{margin:10px 0 4px;font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.04em}#detail table{border-collapse:collapse;width:100%}#detail td{padding:2px 4px;border-bottom:1px solid #eee;vertical-align:top}#detail td.n{text-align:right;white-space:nowrap;color:#555}#detail .bar{display:inline-block;height:9px;background:#2171b5;vertical-align:middle}#detail .close{float:right;cursor:pointer;color:#888}#detail .yrs{color:#888;font-size:11px}</style></head><body>
-<div id="map"></div><div id="detail"></div><div id="nav" style="position:absolute;top:10px;right:10px;background:#fffc;padding:8px 12px;border-radius:8px;font-size:13px;box-shadow:0 1px 4px #0003;font-family:system-ui,sans-serif"><b>Journal of Geography Atlas</b> &nbsp; <a href="index.html">Topic landscape</a> · <a href="institutions.html">Institutions (globe)</a> · <a href="https://github.com/edgeoinnovations-resources/journal-of-geography-atlas">Data &amp; README</a></div><div id="panel"><b>Where the Journal of Geography was written</b><div style="margin:6px 0">Author affiliations from 4,122 articles (1,562 institutions), aggregated to H3 hexagons. Tower height = cumulative articles up to the selected year.</div>
+<div id="map"></div><div id="detail"></div><div id="nav" style="position:absolute;top:10px;right:10px;background:#fffc;padding:8px 12px;border-radius:8px;font-size:13px;box-shadow:0 1px 4px #0003;font-family:system-ui,sans-serif"><b>Journal of Geography Atlas</b> &nbsp; <a href="index.html">Topic landscape</a> · <a href="institutions.html">Institutions (globe)</a> · <a href="https://github.com/edgeoinnovations-resources/journal-of-geography-atlas">Data &amp; README</a></div><div id="panel"><b>Where the Journal of Geography was written</b> <span style='color:#999;font-size:11px'>v3</span><div style="margin:6px 0">Author affiliations from 4,122 articles (1,562 institutions), aggregated to H3 hexagons. Tower height = cumulative articles up to the selected year.</div>
 <label>Year: <b id="yl">2026</b></label><input id="yr" type="range" min="1902" max="2026" step="1" value="2026"><button id="play">▶ play</button> &nbsp; <label style="display:inline"><input type="checkbox" id="spin"> auto-rotate</label>
 <div style="margin-top:6px;color:#555">Globe view: drag to spin, Ctrl/right-drag to tilt. Zoom out to see the whole planet. Click a tower to see its institutions, most prolific authors and decade profile.</div></div>
 <script>
 const map=new maplibregl.Map({container:"map",style:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",center:[-88,38],zoom:3.2,pitch:50,bearing:-15,maxPitch:80});
 map.on("style.load",()=>{map.setProjection({type:"globe"});map.setSky({"atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,5,1,7,0]});});
 map.on("load",()=>{
- map.addSource("hex",{type:"geojson",data:"data/institutions_hex.geojson"});
+ map.addSource("hex",{type:"geojson",data:"data/institutions_hex.geojson?v=3"});
+ map.addLayer({id:"hex-click",type:"fill",source:"hex",paint:{"fill-color":"#000","fill-opacity":0.01}});
  map.addLayer({id:"hex",type:"fill-extrusion",source:"hex",paint:{"fill-extrusion-height":["*",["coalesce",["get","c2026"],0],8000],"fill-extrusion-base":0,"fill-extrusion-opacity":0.85,
    "fill-extrusion-color":["interpolate",["linear"],["get","first_year"],1902,"#08306b",1930,"#2171b5",1960,"#6baed6",1990,"#fd8d3c",2026,"#bd0026"]}});
  map.addSource("inst",{type:"geojson",data:"data/jog_institutions_points.geojson"});
  map.addLayer({id:"inst-lab",type:"symbol",source:"inst",minzoom:5,filter:[">=",["get","articles"],8],layout:{"text-field":["get","institution_canon"],"text-size":11,"text-offset":[0,1],"text-anchor":"top"},paint:{"text-color":"#222","text-halo-color":"#fff","text-halo-width":1.5}});
- const setYear=y=>{document.getElementById("yl").textContent=y;map.setPaintProperty("hex","fill-extrusion-height",["*",["coalesce",["get","c"+y],0],8000]);map.setFilter("hex",[">",["coalesce",["get","c"+y],0],0]);};
+ const setYear=y=>{document.getElementById("yl").textContent=y;map.setPaintProperty("hex","fill-extrusion-height",["*",["coalesce",["get","c"+y],0],8000]);map.setFilter("hex",[">",["coalesce",["get","c"+y],0],0]);map.setFilter("hex-click",[">",["coalesce",["get","c"+y],0],0]);};
  document.getElementById("yr").oninput=e=>setYear(+e.target.value);
  let t=null;document.getElementById("play").onclick=()=>{if(t){clearInterval(t);t=null;return;}let y=1902;t=setInterval(()=>{document.getElementById("yr").value=y;setYear(y);y++;if(y>2026){clearInterval(t);t=null;}},120);};
  let spinning=false;document.getElementById("spin").onchange=e=>{spinning=e.target.checked;if(spinning)spin();};
  function spin(){if(!spinning)return;const c=map.getCenter();c.lng-=0.25;map.easeTo({center:c,duration:100,easing:x=>x});setTimeout(spin,100);}
- let DETAIL={};fetch("data/hex_detail.json").then(r=>r.json()).then(j=>DETAIL=j);
- map.on("click","hex",e=>{const p=e.features[0].properties;const y=+document.getElementById("yr").value;const d=DETAIL[p.h3];const el=document.getElementById("detail");el.style.display="block";
-   if(!d){el.innerHTML=`<span class=close onclick="this.parentNode.style.display='none'">✕</span><h3>${p.top_institution}</h3>${p.institutions}`;return;}
+ let DETAIL={};fetch("data/hex_detail.json?v=3").then(r=>r.json()).then(j=>DETAIL=j);
+ map.on("click",e=>{const bb=[[e.point.x-8,e.point.y-8],[e.point.x+8,e.point.y+8]];let fs=map.queryRenderedFeatures(bb,{layers:["hex","hex-click"]});if(!fs.length)return;fs.sort((a,b)=>(b.properties.articles_total||0)-(a.properties.articles_total||0));const f0=fs[0];const p=f0.properties;const y=+document.getElementById("yr").value;const d=DETAIL[p.h3];const el=document.getElementById("detail");el.style.display="block";
+   if(!d){el.innerHTML=(Object.keys(DETAIL).length?"":"<i>Loading author details…</i><br>")+`<span class=close onclick="this.parentNode.style.display='none'">✕</span><h3>${p.top_institution}</h3>${p.institutions}`;return;}
    const inst=d.institutions.map(r=>`<tr><td>${r[0]}<div class=yrs>${r[2]}–${r[3]}</div></td><td class=n>${r[1]}</td></tr>`).join("");
    const au=d.top_authors.map(r=>`<tr><td><b>${r[0]}</b><div class=yrs>${r[4]} · ${r[2]}${r[3]!=r[2]?"–"+r[3]:""}</div></td><td class=n>${r[1]}</td></tr>`).join("");
    const decs=Object.keys(d.decades).sort();const mx=Math.max(...Object.values(d.decades));
@@ -28,6 +29,6 @@ map.on("load",()=>{
    el.innerHTML=`<span class=close onclick="this.parentNode.style.display='none'">✕</span><h3>${d.place||p.top_institution}</h3><div>${d.articles} articles · ${d.authors} authors · ${p.first_year}–${p.last_year}${y<2026?` · <b>${p["c"+y]||0}</b> by ${y}`:""}</div>
    <h4>Institutions (articles)</h4><table>${inst}</table><h4>Most prolific authors</h4><table>${au}</table><h4>Articles by decade</h4><table>${dec}</table>
    <div style="margin-top:8px;color:#777;font-size:11px">H3 hexagon ${p.h3}. Search an author in Zotero with the tag <i>@Last, First</i>.</div>`;});
- map.on("mouseenter","hex",()=>map.getCanvas().style.cursor="pointer");map.on("mouseleave","hex",()=>map.getCanvas().style.cursor="");
+ for(const L of ["hex","hex-click"]){map.on("mouseenter",L,()=>map.getCanvas().style.cursor="pointer");map.on("mouseleave",L,()=>map.getCanvas().style.cursor="");}
 });
 </script></body></html>
