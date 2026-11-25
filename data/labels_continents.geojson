@@ -1,0 +1,16 @@
+{
+"type": "FeatureCollection",
+"name": "labels_continents",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "macro": 0, "macro_name": "NCGE Business & Awards", "lon": 11.575249, "lat": -23.171158, "n": 1006, "yr_med": 1964.0 }, "geometry": { "type": "Point", "coordinates": [ 11.575248718261719, -23.171157836914062 ] } },
+{ "type": "Feature", "properties": { "macro": 1, "macro_name": "Subscriptions & Mastheads", "lon": -24.993401, "lat": -15.172165, "n": 490, "yr_med": 1951.0 }, "geometry": { "type": "Point", "coordinates": [ -24.993400573730469, -15.172164916992188 ] } },
+{ "type": "Feature", "properties": { "macro": 2, "macro_name": "Physical & Economic Regional Geography", "lon": -0.48412704, "lat": 16.734068, "n": 1950, "yr_med": 1934.0 }, "geometry": { "type": "Point", "coordinates": [ -0.484127044677734, 16.734067916870117 ] } },
+{ "type": "Feature", "properties": { "macro": 3, "macro_name": "Modern Geography Education (GIS, Standards, Spatial Thinking)", "lon": 23.200829, "lat": -14.468679, "n": 905, "yr_med": 2001.0 }, "geometry": { "type": "Point", "coordinates": [ 23.200828552246094, -14.468679428100586 ] } },
+{ "type": "Feature", "properties": { "macro": 4, "macro_name": "World Regions, Geopolitics & Book Reviews", "lon": 13.400593, "lat": 11.923599, "n": 2653, "yr_med": 1952.0 }, "geometry": { "type": "Point", "coordinates": [ 13.400592803955078, 11.923599243164062 ] } },
+{ "type": "Feature", "properties": { "macro": 5, "macro_name": "Map Skills & Visual Media", "lon": -0.52685165, "lat": -6.755024, "n": 761, "yr_med": 1967.0 }, "geometry": { "type": "Point", "coordinates": [ -0.526851654052734, -6.755023956298828 ] } },
+{ "type": "Feature", "properties": { "macro": 6, "macro_name": "Human, Urban & Environmental Geography", "lon": 24.580339, "lat": 0.7537365, "n": 952, "yr_med": 1978.0 }, "geometry": { "type": "Point", "coordinates": [ 24.580339431762695, 0.75373649597168 ] } },
+{ "type": "Feature", "properties": { "macro": 7, "macro_name": "Latin America & the Caribbean", "lon": 7.9880791, "lat": 32.196999, "n": 358, "yr_med": 1941.0 }, "geometry": { "type": "Point", "coordinates": [ 7.988079071044922, 32.196998596191406 ] } },
+{ "type": "Feature", "properties": { "macro": 8, "macro_name": "Pedagogy & the Nature of Geography", "lon": 17.40053, "lat": -6.4330139, "n": 1076, "yr_med": 1947.0 }, "geometry": { "type": "Point", "coordinates": [ 17.400529861450195, -6.433013916015625 ] } }
+]
+}

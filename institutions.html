@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Journal of Geography — where it was written (1902–2026)</title>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<style>body{margin:0;font-family:system-ui,sans-serif}#map{position:absolute;inset:0}#panel{position:absolute;top:10px;left:10px;background:#fffc;padding:10px 14px;border-radius:8px;max-width:340px;font-size:13px;box-shadow:0 1px 4px #0003}input[type=range]{width:100%}.popup{font-size:12px;max-width:320px}</style></head><body>
+<div id="map"></div><div id="panel"><b>Where the Journal of Geography was written</b><div style="margin:6px 0">Author affiliations from 4,122 articles (1,562 institutions), aggregated to H3 hexagons. Tower height = cumulative articles up to the selected year.</div>
+<label>Year: <b id="yl">2026</b></label><input id="yr" type="range" min="1902" max="2026" step="1" value="2026"><button id="play">▶ play</button>
+<div style="margin-top:6px;color:#555">Ctrl/right-drag to tilt and rotate. Click a hexagon for its institutions.</div></div>
+<script>
+const map=new maplibregl.Map({container:"map",style:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",center:[-88,40],zoom:3.6,pitch:55,bearing:-15,maxPitch:75});
+map.on("load",()=>{
+ map.addSource("hex",{type:"geojson",data:"data/institutions_hex.geojson"});
+ map.addLayer({id:"hex",type:"fill-extrusion",source:"hex",paint:{"fill-extrusion-height":["*",["coalesce",["get","c2026"],0],8000],"fill-extrusion-base":0,"fill-extrusion-opacity":0.85,
+   "fill-extrusion-color":["interpolate",["linear"],["get","first_year"],1902,"#08306b",1930,"#2171b5",1960,"#6baed6",1990,"#fd8d3c",2026,"#bd0026"]}});
+ map.addSource("inst",{type:"geojson",data:"data/jog_institutions_points.geojson"});
+ map.addLayer({id:"inst-lab",type:"symbol",source:"inst",minzoom:5,filter:[">=",["get","articles"],8],layout:{"text-field":["get","institution_canon"],"text-size":11,"text-offset":[0,1],"text-anchor":"top"},paint:{"text-color":"#222","text-halo-color":"#fff","text-halo-width":1.5}});
+ const setYear=y=>{document.getElementById("yl").textContent=y;map.setPaintProperty("hex","fill-extrusion-height",["*",["coalesce",["get","c"+y],0],8000]);map.setFilter("hex",[">",["coalesce",["get","c"+y],0],0]);};
+ document.getElementById("yr").oninput=e=>setYear(+e.target.value);
+ let t=null;document.getElementById("play").onclick=()=>{if(t){clearInterval(t);t=null;return;}let y=1902;t=setInterval(()=>{document.getElementById("yr").value=y;setYear(y);y++;if(y>2026){clearInterval(t);t=null;}},120);};
+ map.on("click","hex",e=>{const p=e.features[0].properties;const y=+document.getElementById("yr").value;new maplibregl.Popup().setLngLat(e.lngLat).setHTML(`<div class=popup><b>${p.top_institution}</b><br>${p.institutions}<br>Articles to ${y}: <b>${p["c"+y]||0}</b> (total ${p.articles_total}); first ${p.first_year}, last ${p.last_year}</div>`).addTo(map)});
+});
+</script></body></html>

@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Journal of Geography 1902–2026 — Topic Landscape</title>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+<style>body{margin:0;font-family:system-ui,sans-serif}#map{position:absolute;inset:0}#panel{position:absolute;top:10px;left:10px;background:#fffc;padding:10px 14px;border-radius:8px;max-width:360px;font-size:13px;box-shadow:0 1px 4px #0003}
+#legend span{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:50%}input[type=range]{width:100%}.popup{font-size:12px;max-width:300px}label{display:block;margin-top:6px}</style></head><body>
+<div id="map"></div><div id="panel"><b>Journal of Geography 1902–2026 — what the journal thought about</b>
+<div style="margin:6px 0 4px">10,151 articles embedded and projected into a synthetic landscape. Elevation/shading = article density. Nearby = similar content.</div>
+<label>Decade terrain: <b id="declabel">all years</b></label><input id="dec" type="range" min="0" max="13" step="1" value="0">
+<label><input type="checkbox" id="pts" checked> article points &nbsp; <input type="checkbox" id="defs" checked> definition articles (red rings) &nbsp; <input type="checkbox" id="games"> games</label>
+<div id="legend" style="margin-top:6px"></div><div style="margin-top:6px;color:#555">Click a point for title, authors, DOI and a Zotero link. Labels: continents at low zoom, regions when you zoom in.</div></div>
+<script>
+const protocol=new pmtiles.Protocol();maplibregl.addProtocol("pmtiles",protocol.tile);
+const DEC=["all",1900,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000,2010,2020];const B=[[-60.0,40.0],[60.0,40.0],[60.0,-40.0],[-60.0,-40.0]];
+const MACRO={"0": "NCGE Business & Awards", "1": "Subscriptions & Mastheads", "2": "Physical & Economic Regional Geography", "3": "Modern Geography Education (GIS, Standards, Spatial Thinking)", "4": "World Regions, Geopolitics & Book Reviews", "5": "Map Skills & Visual Media", "6": "Human, Urban & Environmental Geography", "7": "Latin America & the Caribbean", "8": "Pedagogy & the Nature of Geography"};const COL={"0": "#1f77b4", "1": "#ff7f0e", "2": "#2ca02c", "3": "#d62728", "4": "#9467bd", "5": "#8c564b", "6": "#e377c2", "7": "#7f7f7f", "8": "#bcbd22"};
+const map=new maplibregl.Map({container:"map",style:{version:8,glyphs:"https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",sources:{},layers:[{id:"bg",type:"background",paint:{"background-color":"#f4f1ea"}}]},center:[0.0,0.0],zoom:2.6,maxZoom:10,renderWorldCopies:false});
+map.on("load",()=>{
+ map.addSource("terrain",{type:"image",url:"terrain_png/terrain_all.png",coordinates:B});map.addLayer({id:"terrain",type:"raster",source:"terrain",paint:{"raster-opacity":0.9,"raster-fade-duration":0}});
+ map.addSource("articles",{type:"vector",url:"pmtiles://data/jog_articles_topicspace.pmtiles"});
+ map.addLayer({id:"pts",type:"circle",source:"articles","source-layer":"articles",paint:{"circle-radius":["interpolate",["linear"],["zoom"],2,1.6,6,4,9,7],"circle-color":["match", ["get", "macro"], 0, "#1f77b4", 1, "#ff7f0e", 2, "#2ca02c", 3, "#d62728", 4, "#9467bd", 5, "#8c564b", 6, "#e377c2", 7, "#7f7f7f", 8, "#bcbd22", "#999"],"circle-opacity":0.75,"circle-stroke-width":0}});
+ map.addLayer({id:"defs",type:"circle",source:"articles","source-layer":"articles",filter:[">",["get","n_highconf_definitions"],0],paint:{"circle-radius":["interpolate",["linear"],["zoom"],2,4,6,8,9,12],"circle-color":"rgba(0,0,0,0)","circle-stroke-color":"#d00","circle-stroke-width":1.2}});
+ map.addLayer({id:"games",type:"circle",source:"articles","source-layer":"articles",filter:["==",["get","is_game"],true],layout:{visibility:"none"},paint:{"circle-radius":["interpolate",["linear"],["zoom"],2,4,6,8],"circle-color":"rgba(0,0,0,0)","circle-stroke-color":"#000","circle-stroke-width":1.5}});
+ map.addSource("labels",{type:"vector",url:"pmtiles://data/jog_labels.pmtiles"});
+ map.addLayer({id:"continents",type:"symbol",source:"labels","source-layer":"continents",maxzoom:5,layout:{"text-field":["get","macro_name"],"text-size":13,"text-font":["Open Sans Bold"],"text-max-width":12},paint:{"text-color":"#222","text-halo-color":"#fff","text-halo-width":2}});
+ map.addLayer({id:"regions",type:"symbol",source:"labels","source-layer":"regions",minzoom:4.5,layout:{"text-field":["get","cluster_name"],"text-size":11,"text-font":["Open Sans Regular"],"text-max-width":10},paint:{"text-color":"#333","text-halo-color":"#fff","text-halo-width":1.5}});
+ const lg=document.getElementById("legend");Object.keys(MACRO).forEach(k=>{lg.innerHTML+=`<div><span style="background:${COL[k]}"></span>${MACRO[k]}</div>`});
+ map.on("click","pts",e=>{const p=e.features[0].properties;new maplibregl.Popup().setLngLat(e.lngLat).setHTML(`<div class=popup><b>${p.title}</b><br>${p.authors||""} (${p.year})<br><i>${p.cluster_name}</i> · ${p.macro_name}<br><a href="${p.doi_url}" target=_blank>DOI</a> · <a href="${p.zotero_select}">Open in Zotero</a>${p.n_highconf_definitions>0?"<br><b style=color:#d00>defines geography</b>":""}</div>`).addTo(map)});
+ map.on("mouseenter","pts",()=>map.getCanvas().style.cursor="pointer");map.on("mouseleave","pts",()=>map.getCanvas().style.cursor="");
+ document.getElementById("dec").oninput=e=>{const d=DEC[+e.target.value];document.getElementById("declabel").textContent=d==="all"?"all years":d+"s";map.getSource("terrain").updateImage({url:d==="all"?"terrain_png/terrain_all.png":`terrain_png/terrain_${d}s.png`,coordinates:B});
+   if(d==="all"){map.setFilter("pts",null);}else{map.setFilter("pts",["==",["get","decade"],d]);}};
+ for(const id of ["pts","defs","games"])document.getElementById(id).onchange=e=>map.setLayoutProperty(id,"visibility",e.target.checked?"visible":"none");
+});
+</script></body></html>
